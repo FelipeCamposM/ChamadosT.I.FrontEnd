@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model chamado {
+  id               Int       @id @default(autoincrement())
+  requester        String
+  subtitle         String
+  description      String
+  email            String
+  ticket           String    @unique
+  typeproblem      String
+  createdAt        DateTime  @default(now())
+  attributedAt     DateTime?
+  finishedAt       DateTime?
+  finishedByUser   String?
+  reasonFinished   String?
+  updatedAt        DateTime
+  attributedByUser String?
+}
