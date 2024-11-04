@@ -12,7 +12,7 @@ import { truncateText } from "@/utils/functions/truncateText";
 import { chamado } from "@prisma/client";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { Input } from "@/components/ui/input";
-import { Search, Eraser } from 'lucide-react';
+import { Eraser } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 export default function ChamadosAbertos() {
