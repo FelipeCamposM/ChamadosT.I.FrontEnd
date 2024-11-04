@@ -12,7 +12,7 @@ import { truncateText } from "@/utils/functions/truncateText";
 import { chamado } from "@prisma/client";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { Input } from "@/components/ui/input";
-import { Search } from 'lucide-react';
+import { Search, Eraser } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 export default function ChamadosAbertos() {
@@ -20,6 +20,8 @@ export default function ChamadosAbertos() {
     const [selectedProblem, setSelectedProblem] = useState<string | null>(null);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("")
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
 
@@ -43,6 +45,25 @@ export default function ChamadosAbertos() {
         fetchChamados();
     }, []);
 
+    // Função para verificar se um chamado está dentro do intervalo de datas
+    const isWithinDateRange = (date: string | number | Date) => {
+        const calledDate = new Date(date);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        return (!start || calledDate >= start) && (!end || calledDate <= end);
+    };
+
+    // Função para limpar todos os filtros
+    const clearFilters = () => {
+        setSelectedProblem(null);
+        setSelectedUser(null);
+        setSearchTerm("");
+        setStartDate("");
+        setEndDate("");
+        // setCurrentPage(1);
+    };
+
     // Filtra os chamados com base nas seleções
     const filteredChamados = chamados
         .filter((chamado) => {
@@ -51,7 +72,8 @@ export default function ChamadosAbertos() {
             const matchesSearchTerm = chamado.requester.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                         chamado.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                         chamado.description.toLowerCase().includes(searchTerm.toLowerCase());
-            return matchesProblem && matchesUser && matchesSearchTerm;
+            const matchesDate = isWithinDateRange(chamado.createdAt);
+            return matchesProblem && matchesUser && matchesSearchTerm && matchesDate;
         })
         .sort((a, b) => {
             const dateA = a.finishedAt ? new Date(a.finishedAt).getTime() : 0;
@@ -75,17 +97,37 @@ export default function ChamadosAbertos() {
                 <CardHeader>
                     <CardTitle className="flex justify-between">
                         Chamados Finalizados
-                        <div className="flex">
+                        <div className="flex space-x-2">
+                            <div className="flex gap-2">
+                                <Button className="mt-6" variant="outline" onClick={clearFilters}>Limpar <Eraser className="w-4 h-4"/></Button>
+                                <div className="flex flex-col gap-2">
+                                    <span className="pl-2 font-normal">Data Início</span>
+                                    <Input
+                                        type="date"
+                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal"
+                                        placeholder="Data de Início"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <span className="pl-2 font-normal">Data Finalizado</span>
+                                    <Input
+                                        type="date"
+                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal"
+                                        placeholder="Data de Fim"
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                    />
+                                </div>
+                            </div>
                             <Input 
                                 type="text" 
-                                className="max-w-[500px] rounded-r-none ring-0 focus-visible:ring-offset-0 focus-visible:ring-0" 
+                                className="mt-6 max-w-[500px] ring-0 focus-visible:ring-offset-0 focus-visible:ring-0" 
                                 placeholder="Pesquisar..." 
                                 value={searchTerm} // Valor do input de busca
                                 onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o estado do termo de busca
                             />
-                            <Button variant="outline" className="rounded-l-none border-l-0">
-                                <Search />
-                            </Button>
                         </div>
 
 
