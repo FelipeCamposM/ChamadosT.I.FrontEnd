@@ -84,10 +84,12 @@ export default function ChamadosAbertos() {
             return dateB - dateA; // Ordena do mais recente para o mais antigo
         });
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredChamados.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(filteredChamados.length / itemsPerPage);
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        const currentItems = filteredChamados.slice(indexOfFirstItem, indexOfLastItem);
+        const totalPages = Math.ceil(filteredChamados.length / itemsPerPage);
+        const startPage = Math.max(1, currentPage - 7); // Começa 7 páginas antes do número atual
+        const endPage = Math.min(totalPages, startPage + 14); // Termina 15 páginas após o início
 
     function numberTicketOnPage(pageNumber: number, indexNumber: number) {
         return pageNumber >= 2 ? `${(pageNumber - 1) * itemsPerPage + indexNumber + 1}` : `${indexNumber + 1}`;
@@ -313,9 +315,9 @@ export default function ChamadosAbertos() {
                                     Anterior
                                 </PaginationPrevious>
                             </PaginationItem>
-                            {[...Array(totalPages)].map((_, i) => (
-                                <PaginationItem key={i}>
-                                    <PaginationLink className={currentPage === i + 1 ? "bg-gray-200" : ""} href="#" onClick={() => setCurrentPage(i + 1)}>{i + 1}</PaginationLink>
+                            {[...Array(endPage - startPage + 1)].map((_, i) => (
+                                <PaginationItem key={i + startPage}>
+                                    <PaginationLink className={currentPage === i + startPage ? "bg-gray-200" : ""} href="#" onClick={() => setCurrentPage(i + startPage)}>{i + startPage}</PaginationLink>
                                 </PaginationItem>
                             ))}
                             <PaginationItem>
