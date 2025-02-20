@@ -16,6 +16,11 @@ export default function ChamadosAbertos() {
     const [chamados, setChamados] = useState<chamado[]>([]);
     const [selectedProblem, setSelectedProblem] = useState<string | null>(null);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState("")
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 15;
 
       // Função para buscar os dados dos chamados
       useEffect(() => {
@@ -51,6 +56,10 @@ export default function ChamadosAbertos() {
         return dateB - dateA; // Ordena do mais recente para o mais antigo
     });
 
+    function numberTicketOnPage(pageNumber: number, indexNumber: number) {
+        return pageNumber >= 2 ? `${(pageNumber - 1) * itemsPerPage + indexNumber + 1}` : `${indexNumber + 1}`;
+    }
+
     return (
         <>
         <div className="p-4">
@@ -64,13 +73,13 @@ export default function ChamadosAbertos() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="pl-4">Nº</TableHead>
-                                <TableHead className="pl-4">Requisitante</TableHead>
-                                <TableHead className="pl-4">Assunto</TableHead>
-                                <TableHead className="pl-4">Email</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Nº</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Requisitante</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Assunto</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Email</TableHead>
                                 <TableHead>
                                     <Select onValueChange={(value) => setSelectedProblem(value)}>
-                                        <SelectTrigger className="w-[180px] h-8">
+                                        <SelectTrigger className="h-8 lg:w-[140px] xl:w-[180px] lg:text-xs xl:text-sm">
                                             <SelectValue placeholder="Tipo de Problema" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -90,24 +99,24 @@ export default function ChamadosAbertos() {
                                         </SelectContent>
                                     </Select>
                                 </TableHead>
-                                <TableHead className="pl-4">Descrição</TableHead>
-                                <TableHead className="pl-4">Data da Criação 🟢</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Descrição</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Data da Criação 🟢</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredChamados.length > 0 ? (
                                 filteredChamados
-                                    .map((chamado: chamado) => (
+                                    .map((chamado: chamado, index) => (
                                     <Dialog key={chamado.id}>
                                         <DialogTrigger className="hover:cursor-pointer" asChild>
                                             <TableRow key={chamado.id}>
-                                                <TableCell className="font-medium text-center">{(chamados.indexOf(chamado) + 1 + "º").toString()}</TableCell>
-                                                <TableCell className="pl-4 w-32">{chamado.requester}</TableCell>
-                                                <TableCell className="pl-4">{chamado.subtitle}</TableCell>
-                                                <TableCell className="pl-4">{chamado.email}</TableCell>
-                                                <TableCell className="pl-4 w-56">{chamado.typeproblem}</TableCell>
-                                                <TableCell className="pl-4">{chamado.description}</TableCell>
-                                                <TableCell className="pl-4 w-56">{formatDate(chamado.createdAt)}</TableCell>
+                                                <TableCell className="font-medium text-center lg:text-xs xl:text-sm">{numberTicketOnPage(currentPage, index)}</TableCell>
+                                                <TableCell className="pl-4 w-32 lg:text-xs xl:text-sm">{chamado.requester}</TableCell>
+                                                <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.subtitle}</TableCell>
+                                                <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.email}</TableCell>
+                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{chamado.typeproblem}</TableCell>
+                                                <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.description}</TableCell>
+                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(chamado.createdAt)}</TableCell>
                                                 
                                             </TableRow>
                                             </DialogTrigger>
@@ -161,7 +170,7 @@ export default function ChamadosAbertos() {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="text-center">Nenhum chamado encontrado.</TableCell>
+                                    <TableCell colSpan={7} className="text-center lg:text-xs xl:text-sm">Nenhum chamado encontrado.</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>

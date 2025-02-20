@@ -18,7 +18,8 @@ import { Button } from "@/components/ui/button";
 export default function ChamadosAbertos() {
     const [chamados, setChamados] = useState<chamado[]>([]);
     const [selectedProblem, setSelectedProblem] = useState<string | null>(null);
-    const [selectedUser, setSelectedUser] = useState<string | null>(null);
+    const [selectedUserEnded, setSelectedUserEnded] = useState<string | null>(null);
+    const [selectedUserAttributed, setSelectedUserAttributed] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("")
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -57,7 +58,8 @@ export default function ChamadosAbertos() {
     // Função para limpar todos os filtros
     const clearFilters = () => {
         setSelectedProblem(null);
-        setSelectedUser(null);
+        setSelectedUserAttributed(null);
+        setSelectedUserEnded(null);
         setSearchTerm("");
         setStartDate("");
         setEndDate("");
@@ -68,12 +70,13 @@ export default function ChamadosAbertos() {
     const filteredChamados = chamados
         .filter((chamado) => {
             const matchesProblem = selectedProblem ? chamado.typeproblem === selectedProblem : true;
-            const matchesUser = selectedUser ? chamado.attributedByUser === selectedUser : true;
+            const matchesUserAttributed = selectedUserAttributed ? chamado.attributedByUser === selectedUserAttributed : true;
+            const matchesUserEnded = selectedUserEnded ? chamado.finishedByUser === selectedUserEnded : true;
             const matchesSearchTerm = chamado.requester.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                         chamado.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                         chamado.description.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesDate = isWithinDateRange(chamado.createdAt);
-            return matchesProblem && matchesUser && matchesSearchTerm && matchesDate;
+            return matchesProblem && matchesUserAttributed && matchesUserEnded && matchesSearchTerm && matchesDate;
         })
         .sort((a, b) => {
             const dateA = a.finishedAt ? new Date(a.finishedAt).getTime() : 0;
@@ -90,10 +93,16 @@ export default function ChamadosAbertos() {
         return pageNumber >= 2 ? `${(pageNumber - 1) * itemsPerPage + indexNumber + 1}` : `${indexNumber + 1}`;
     }
 
+    // function colorSelectedPage(numberPage) {
+    //     if ((numberPage % 2) != 0){
+    //         return background
+    //     }
+    // }
+
 
     return (
-        <div className="p-4">
-            <Card>
+        <div>
+            <Card className="my-10 mx-5">
                 <CardHeader>
                     <CardTitle className="flex justify-between">
                         Chamados Finalizados
@@ -104,7 +113,7 @@ export default function ChamadosAbertos() {
                                     <span className="pl-2 font-normal">Data Início</span>
                                     <Input
                                         type="date"
-                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal"
+                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal cursor-pointer"
                                         placeholder="Data de Início"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
@@ -114,7 +123,7 @@ export default function ChamadosAbertos() {
                                     <span className="pl-2 font-normal">Data Finalizado</span>
                                     <Input
                                         type="date"
-                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal"
+                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal cursor-pointer"
                                         placeholder="Data de Fim"
                                         value={endDate}
                                         onChange={(e) => setEndDate(e.target.value)}
@@ -129,22 +138,19 @@ export default function ChamadosAbertos() {
                                 onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o estado do termo de busca
                             />
                         </div>
-
-
                     </CardTitle>
-                    <CardDescription>Lista de chamados finalizados</CardDescription>
                 </CardHeader>
                 <Separator />
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="pl-4">Nº</TableHead>
-                                <TableHead className="pl-4">Requisitante</TableHead>
-                                <TableHead className="pl-4">Assunto</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Nº</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Requisitante</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Assunto</TableHead>
                                 <TableHead>
                                     <Select onValueChange={(value) => setSelectedProblem(value)}>
-                                        <SelectTrigger className="w-[180px] h-8">
+                                        <SelectTrigger className="h-8 lg:w-[140px] xl:w-[180px] lg:text-xs xl:text-sm">
                                             <SelectValue placeholder="Tipo de Problema" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -164,42 +170,42 @@ export default function ChamadosAbertos() {
                                         </SelectContent>
                                     </Select>
                                 </TableHead>
-                                <TableHead className="pl-4">Descrição</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Descrição</TableHead>
                                 <TableHead>
-                                    <Select onValueChange={(value) => setSelectedUser(value)}>
-                                        <SelectTrigger className="w-[180px] h-8">
+                                    <Select onValueChange={(value) => setSelectedUserAttributed(value)}>
+                                        <SelectTrigger className="h-8 lg:w-[110px] xl:w-[180px] lg:text-xs xl:text-sm">
                                             <SelectValue placeholder="Responsável:" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Responsáveis</SelectLabel>
-                                                <SelectItem value="João Paulo">João Paulo</SelectItem>
-                                                <SelectItem value="Jhionathan Badias">Jhionathan Badias</SelectItem>
+                                                <SelectItem value="☕João Paulo 💻">☕João Paulo 💻</SelectItem>
+                                                <SelectItem value="Jhionathan R3">Jhionathan R3</SelectItem>
                                                 <SelectItem value="Felipe Campos">Felipe Campos</SelectItem>
-                                                <SelectItem value="Christofer Almeida">Christofer Almeida</SelectItem>
+                                                <SelectItem value="Christofer">Christofer</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                 </TableHead>
                                 <TableHead>
-                                    <Select onValueChange={(value) => setSelectedUser(value)}>
-                                        <SelectTrigger className="w-[180px] h-8">
+                                    <Select onValueChange={(value) => setSelectedUserEnded(value)}>
+                                        <SelectTrigger className="h-8 lg:w-[116px] xl:w-[180px] lg:text-xs xl:text-sm">
                                             <SelectValue placeholder="Finalizado por:" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Finalizado por:</SelectLabel>
-                                                <SelectItem value="João Paulo">João Paulo</SelectItem>
-                                                <SelectItem value="Jhionathan Badias">Jhionathan Badias</SelectItem>
+                                                <SelectItem value="☕João Paulo 💻">☕João Paulo 💻</SelectItem>
+                                                <SelectItem value="Jhionathan R3">Jhionathan R3</SelectItem>
                                                 <SelectItem value="Felipe Campos">Felipe Campos</SelectItem>
-                                                <SelectItem value="Christofer Almeida">Christofer Almeida</SelectItem>
+                                                <SelectItem value="Christofer">Christofer</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                 </TableHead>
-                                <TableHead className="pl-4">Data da Criação 🟢</TableHead>
-                                <TableHead className="pl-4">Tempo de Atendimento 🟡</TableHead>
-                                <TableHead className="pl-4">Data de Encerramento 🔴</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Data da Criação 🟢</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Tempo de Atendimento 🟡</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Data de Encerramento 🔴</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -207,17 +213,17 @@ export default function ChamadosAbertos() {
                                 currentItems.map((chamado, index) => (
                                     <Dialog key={chamado.id}>
                                         <DialogTrigger className="hover:cursor-pointer" asChild>
-                                            <TableRow key={chamado.id}>
-                                                <TableCell className="font-medium text-center">{numberTicketOnPage(currentPage, index)}º</TableCell>
-                                                <TableCell className="pl-4 w-32">{chamado.requester}</TableCell>
-                                                <TableCell className="pl-4 truncate w-48 overflow-hidden text-ellipsis whitespace-nowrap">{truncateText(chamado.subtitle, 15)}</TableCell>
-                                                <TableCell className="pl-4 w-56">{chamado.typeproblem}</TableCell>
-                                                <TableCell className="pl-4 truncate w-48 overflow-hidden text-ellipsis whitespace-nowrap">{truncateText(chamado.description, 20)}</TableCell>
-                                                <TableCell className="pl-4">{chamado.attributedByUser}</TableCell>
-                                                <TableCell className="pl-4">{chamado.finishedByUser}</TableCell>
-                                                <TableCell className="pl-4 w-56">{formatDate(chamado.createdAt)}</TableCell>
-                                                <TableCell className="pl-4 w-56">{attendantTime(chamado.attributedAt as Date, chamado.finishedAt as Date)}</TableCell>
-                                                <TableCell className="pl-4 w-56">{formatDate(chamado.finishedAt as Date)}</TableCell>
+                                            <TableRow key={chamado.id} className="max-h-16 h-16">
+                                                <TableCell className="font-medium text-center lg:text-xs xl:text-sm">{numberTicketOnPage(currentPage, index)}º</TableCell>
+                                                <TableCell className="pl-4 w-32 lg:text-xs xl:text-sm">{chamado.requester}</TableCell>
+                                                <TableCell className="pl-4 truncate w-48 overflow-hidden text-ellipsis whitespace-nowrap lg:text-xs xl:text-sm">{truncateText(chamado.subtitle, 15)}</TableCell>
+                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{chamado.typeproblem}</TableCell>
+                                                <TableCell className="pl-4 truncate w-48 overflow-hidden text-ellipsis whitespace-nowrap lg:text-xs xl:text-sm">{truncateText(chamado.description, 20)}</TableCell>
+                                                <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.attributedByUser}</TableCell>
+                                                <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.finishedByUser}</TableCell>
+                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(chamado.createdAt)}</TableCell>
+                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{attendantTime(chamado.attributedAt as Date, chamado.finishedAt as Date)}</TableCell>
+                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(chamado.finishedAt as Date)}</TableCell>
                                             </TableRow>
                                         </DialogTrigger>
                                         <DialogContent className="w-2/3 h-1/2">
@@ -229,11 +235,6 @@ export default function ChamadosAbertos() {
                                                 </DialogTitle>
                                             </DialogHeader>
                                                 <Table className="flex flex-col w-full">
-                                                    <TableHeader>
-                                                        <TableRow>
-                                                            <TableHead className="w-screen">Informações</TableHead>
-                                                        </TableRow>
-                                                    </TableHeader>
                                                     <TableBody>
                                                         <TableRow>
                                                             <TableCell className="w-screen">
@@ -273,14 +274,7 @@ export default function ChamadosAbertos() {
                                                         <TableRow className="w-full">
                                                             <TableCell>
                                                                 <span>
-                                                                    <strong>Motivo de Encerramento: </strong> {chamado.reasonFinished}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        <TableRow className="w-full">
-                                                            <TableCell>
-                                                                <span>
-                                                                    <strong>Motivo: </strong> {chamado.reasonFinished}
+                                                                    <strong>Mensagem de Encerramento: </strong> {chamado.reasonFinished}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>
@@ -301,11 +295,13 @@ export default function ChamadosAbertos() {
                     <Pagination>
                         <PaginationContent>
                             <PaginationItem>
-                                <PaginationPrevious href="#" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} />
+                                <PaginationPrevious href="#" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}>
+                                    Anterior
+                                </PaginationPrevious>
                             </PaginationItem>
                             {[...Array(totalPages)].map((_, i) => (
                                 <PaginationItem key={i}>
-                                    <PaginationLink href="#" onClick={() => setCurrentPage(i + 1)}>{i + 1}</PaginationLink>
+                                    <PaginationLink className={currentPage === i + 1 ? "bg-gray-200" : ""} href="#" onClick={() => setCurrentPage(i + 1)}>{i + 1}</PaginationLink>
                                 </PaginationItem>
                             ))}
                             <PaginationItem>
