@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { chamado } from "@prisma/client"
 import { useEffect, useState } from "react"
 import { formatDate } from "@/utils/functions/formatDate";
+import { truncateText } from "@/utils/functions/truncateText";
+import { attendantTime } from "@/utils/functions/attendantTime";
 
 
 
@@ -66,13 +68,12 @@ export default function ChamadosAbertos() {
             <Card> 
                 <CardHeader>
                     <CardTitle>Chamados Abertos</CardTitle>
-                    <CardDescription>Lista de Chamados Abertos</CardDescription>
                 </CardHeader>
                 <Separator/>
                 <CardContent>
                     <Table>
                         <TableHeader>
-                            <TableRow>
+                            <TableRow className="hover:bg-white">
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Nº</TableHead>
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Requisitante</TableHead>
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Assunto</TableHead>
@@ -101,6 +102,7 @@ export default function ChamadosAbertos() {
                                 </TableHead>
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Descrição</TableHead>
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Data da Criação 🟢</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Tempo Aberto 🟡</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -109,18 +111,19 @@ export default function ChamadosAbertos() {
                                     .map((chamado: chamado, index) => (
                                     <Dialog key={chamado.id}>
                                         <DialogTrigger className="hover:cursor-pointer" asChild>
-                                            <TableRow key={chamado.id}>
+                                            <TableRow key={chamado.id} className="max-h-16 h-16">
                                                 <TableCell className="font-medium text-center lg:text-xs xl:text-sm">{numberTicketOnPage(currentPage, index)}</TableCell>
                                                 <TableCell className="pl-4 w-32 lg:text-xs xl:text-sm">{chamado.requester}</TableCell>
-                                                <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.subtitle}</TableCell>
+                                                <TableCell className="pl-4 truncate w-48 overflow-hidden text-ellipsis whitespace-nowrap lg:text-xs xl:text-sm">{truncateText(chamado.subtitle, 25)}</TableCell>
                                                 <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.email}</TableCell>
                                                 <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{chamado.typeproblem}</TableCell>
-                                                <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.description}</TableCell>
+                                                <TableCell className="pl-4 truncate w-48 overflow-hidden text-ellipsis whitespace-nowrap lg:text-xs xl:text-sm">{truncateText(chamado.description, 50)}</TableCell>
                                                 <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(chamado.createdAt)}</TableCell>
+                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{attendantTime(chamado.createdAt, new Date() as Date)}</TableCell>
                                                 
                                             </TableRow>
                                             </DialogTrigger>
-                                            <DialogContent className="w-2/3 h-1/3">
+                                            <DialogContent className="w-2/3 h-[450px]">
                                                 <DialogHeader>
                                                     <DialogTitle className="flex">
                                                         <span>
@@ -160,6 +163,20 @@ export default function ChamadosAbertos() {
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Tipo de Problema: </strong> {chamado.typeproblem}
+                                                                    </span>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                            <TableRow className="w-full">
+                                                                <TableCell>
+                                                                    <span>
+                                                                        <strong>Data da Criação 🟢: </strong> {formatDate(chamado.createdAt)}
+                                                                    </span>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                            <TableRow className="w-full">
+                                                                <TableCell>
+                                                                    <span>
+                                                                        <strong>Tempo de Aberto 🟡: </strong> {attendantTime(chamado.createdAt, new Date() as Date)}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>

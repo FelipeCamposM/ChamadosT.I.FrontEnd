@@ -93,13 +93,6 @@ export default function ChamadosAbertos() {
         return pageNumber >= 2 ? `${(pageNumber - 1) * itemsPerPage + indexNumber + 1}` : `${indexNumber + 1}`;
     }
 
-    // function colorSelectedPage(numberPage) {
-    //     if ((numberPage % 2) != 0){
-    //         return background
-    //     }
-    // }
-
-
     return (
         <div>
             <Card className="my-10 mx-5">
@@ -144,7 +137,7 @@ export default function ChamadosAbertos() {
                 <CardContent>
                     <Table>
                         <TableHeader>
-                            <TableRow>
+                            <TableRow className="hover:bg-white">
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Nº</TableHead>
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Requisitante</TableHead>
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Assunto</TableHead>
@@ -275,6 +268,27 @@ export default function ChamadosAbertos() {
                                                             <TableCell>
                                                                 <span>
                                                                     <strong>Mensagem de Encerramento: </strong> {chamado.reasonFinished}
+                                                                </span>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        <TableRow className="w-full">
+                                                            <TableCell>
+                                                                <span>
+                                                                    <strong>Data da Criação 🟢: </strong> {formatDate(chamado.createdAt)}
+                                                                </span>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        <TableRow className="w-full">
+                                                            <TableCell>
+                                                                <span>
+                                                                    <strong>Tempo de Aberto 🟡: </strong> {attendantTime(chamado.createdAt, new Date() as Date)}
+                                                                </span>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        <TableRow className="w-full">
+                                                            <TableCell>
+                                                                <span>
+                                                                    <strong>Data de Encerramento 🔴: </strong> {formatDate(chamado.finishedAt as Date)}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>
