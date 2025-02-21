@@ -10,13 +10,17 @@ import { useEffect, useState } from "react"
 import { formatDate } from "@/utils/functions/formatDate";
 import { attendantTime } from "@/utils/functions/attendantTime";
 import { truncateText } from "@/utils/functions/truncateText";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Eraser } from "lucide-react";
 
 
 export default function ChamadosAbertos() {
 
     const [chamados, setChamados] = useState<chamado[]>([]);
     const [selectedProblem, setSelectedProblem] = useState<string | null>(null);
-    const [selectedUser, setSelectedUser] = useState<string | null>(null);
+    const [selectedUserEnded, setSelectedUserEnded] = useState<string | null>(null);
+    const [selectedUserAttributed, setSelectedUserAttributed] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("")
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -51,16 +55,28 @@ export default function ChamadosAbertos() {
         fetchChamados();
         }, []);
 
+    // Função para limpar todos os filtros
+    const clearFilters = () => {
+        setSelectedProblem(null);
+        setSelectedUserAttributed(null);
+        setSelectedUserEnded(null);
+        setSearchTerm("");
+        setStartDate("");
+        setEndDate("");
+        // setCurrentPage(1);
+    };
+
         // Filtra os chamados com base nas seleções
     const filteredChamados = chamados
     .filter((chamado) => {
         const matchesProblem = selectedProblem ? chamado.typeproblem === selectedProblem : true;
-            const matchesUser = selectedUser ? chamado.attributedByUser === selectedUser : true;
-            const matchesSearchTerm = chamado.requester.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                        chamado.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                        chamado.description.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesDate = isWithinDateRange(chamado.createdAt);
-            return matchesProblem && matchesUser && matchesSearchTerm && matchesDate;
+        const matchesUserAttributed = selectedUserAttributed ? chamado.attributedByUser === selectedUserAttributed : true;
+        const matchesUserEnded = selectedUserEnded ? chamado.finishedByUser === selectedUserEnded : true;
+        const matchesSearchTerm = chamado.requester.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    chamado.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    chamado.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesDate = isWithinDateRange(chamado.createdAt);
+        return matchesProblem && matchesUserAttributed && matchesUserEnded && matchesSearchTerm && matchesDate;
     })
     .sort((a, b) => {
         // Verifica se finishedAt não é null antes de fazer a comparação
@@ -82,9 +98,43 @@ export default function ChamadosAbertos() {
     return (
         <>
         <div className="p-4">
-            <Card> 
+            <Card className="my-10 mx-5 bg-[#fcfcfc]"> 
                 <CardHeader>
-                    <CardTitle>Chamados Atribuidos</CardTitle>
+                    <CardTitle className="flex justify-between">
+                        <span>Chamados Atribuidos</span>
+                        <div className="flex space-x-2">
+                            <div className="flex gap-2">
+                                <Button className="mt-6" variant="outline" onClick={clearFilters}>Limpar <Eraser className="w-4 h-4"/></Button>
+                                <div className="flex flex-col gap-2">
+                                    <span className="pl-2 font-normal">Data Início</span>
+                                    <Input
+                                        type="date"
+                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal cursor-pointer"
+                                        placeholder="Data de Início"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <span className="pl-2 font-normal">Data Finalizado</span>
+                                    <Input
+                                        type="date"
+                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal cursor-pointer"
+                                        placeholder="Data de Fim"
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <Input 
+                                type="text" 
+                                className="mt-6 max-w-[500px] ring-0 focus-visible:ring-offset-0 focus-visible:ring-0" 
+                                placeholder="Pesquisar..." 
+                                value={searchTerm} // Valor do input de busca
+                                onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o estado do termo de busca
+                            />
+                        </div>
+                    </CardTitle>
                 </CardHeader>
                 <Separator/>
                 <CardContent>
@@ -103,6 +153,7 @@ export default function ChamadosAbertos() {
                                         <SelectContent>
                                             <SelectGroup>
                                             <SelectLabel>Problemas</SelectLabel>
+                                            <SelectItem value="none">Sem Filtro ▼</SelectItem>
                                             <SelectItem value="Winthor">Winthor 🟠</SelectItem>
                                             <SelectItem value="Ellevti">Ellévti 🔵</SelectItem>
                                             <SelectItem value="Whatsapp">Whatsapp 🟢</SelectItem>
@@ -119,7 +170,7 @@ export default function ChamadosAbertos() {
                                 </TableHead>
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Descrição</TableHead>
                                 <TableHead>
-                                    <Select onValueChange={(value) => setSelectedUser(value)}>
+                                    <Select onValueChange={(value) => setSelectedUserAttributed(value)}>
                                         <SelectTrigger className="h-8 lg:w-[110px] xl:w-[180px] lg:text-xs xl:text-sm">
                                             <SelectValue placeholder="Responsável" />
                                         </SelectTrigger>

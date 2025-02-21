@@ -10,6 +10,9 @@ import { useEffect, useState } from "react"
 import { formatDate } from "@/utils/functions/formatDate";
 import { truncateText } from "@/utils/functions/truncateText";
 import { attendantTime } from "@/utils/functions/attendantTime";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Eraser } from "lucide-react";
 
 
 
@@ -23,6 +26,14 @@ export default function ChamadosAbertos() {
     const [endDate, setEndDate] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
+    
+    const isWithinDateRange = (date: string | number | Date) => {
+        const calledDate = new Date(date);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        return (!start || calledDate >= start) && (!end || calledDate <= end);
+    };
 
       // Função para buscar os dados dos chamados
       useEffect(() => {
@@ -43,12 +54,24 @@ export default function ChamadosAbertos() {
 
         fetchChamados();
         }, []);
+    // Função para limpar todos os filtros
+    const clearFilters = () => {
+        setSelectedProblem(null);
+        setSearchTerm("");
+        setStartDate("");
+        setEndDate("");
+        // setCurrentPage(1);
+    };
 
         // Filtra os chamados com base nas seleções
     const filteredChamados = chamados
     .filter((chamado) => {
         const matchesProblem = selectedProblem ? chamado.typeproblem === selectedProblem : true;
-        return matchesProblem;
+        const matchesSearchTerm = chamado.requester.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    chamado.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    chamado.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesDate = isWithinDateRange(chamado.createdAt);
+        return matchesProblem && matchesSearchTerm && matchesDate;
     })
     .sort((a, b) => {
         // Verifica se finishedAt não é null antes de fazer a comparação
@@ -65,11 +88,45 @@ export default function ChamadosAbertos() {
     return (
         <>
         <div className="p-4">
-            <Card> 
+            <Card className="my-10 mx-5 bg-[#fcfcfc]"> 
                 <CardHeader>
-                    <CardTitle>Chamados Abertos</CardTitle>
+                <CardTitle className="flex justify-between">
+                        <span>Chamados Abertos</span>
+                        <div className="flex space-x-2">
+                            <div className="flex gap-2">
+                                <Button className="mt-6" variant="outline" onClick={clearFilters}>Limpar <Eraser className="w-4 h-4"/></Button>
+                                <div className="flex flex-col gap-2">
+                                    <span className="pl-2 font-normal">Data Início</span>
+                                    <Input
+                                        type="date"
+                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal cursor-pointer"
+                                        placeholder="Data de Início"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <span className="pl-2 font-normal">Data Finalizado</span>
+                                    <Input
+                                        type="date"
+                                        className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0 font-normal cursor-pointer"
+                                        placeholder="Data de Fim"
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <Input 
+                                type="text" 
+                                className="mt-6 max-w-[500px] ring-0 focus-visible:ring-offset-0 focus-visible:ring-0" 
+                                placeholder="Pesquisar..." 
+                                value={searchTerm} // Valor do input de busca
+                                onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o estado do termo de busca
+                            />
+                        </div>
+                    </CardTitle>
                 </CardHeader>
-                <Separator/>
+                <Separator />
                 <CardContent>
                     <Table>
                         <TableHeader>

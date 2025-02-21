@@ -97,10 +97,10 @@ export default function ChamadosAbertos() {
 
     return (
         <div>
-            <Card className="my-10 mx-5">
+            <Card className="my-10 mx-5 bg-[#fcfcfc]">
                 <CardHeader>
                     <CardTitle className="flex justify-between">
-                        Chamados Finalizados
+                        <span>Chamados Finalizados</span>
                         <div className="flex space-x-2">
                             <div className="flex gap-2">
                                 <Button className="mt-6" variant="outline" onClick={clearFilters}>Limpar <Eraser className="w-4 h-4"/></Button>
@@ -137,7 +137,7 @@ export default function ChamadosAbertos() {
                 </CardHeader>
                 <Separator />
                 <CardContent>
-                    <Table>
+                    <Table className="my-2">
                         <TableHeader>
                             <TableRow className="hover:bg-white">
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Nº</TableHead>
@@ -218,7 +218,7 @@ export default function ChamadosAbertos() {
                                                 <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.finishedByUser}</TableCell>
                                                 <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(chamado.createdAt)}</TableCell>
                                                 <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{attendantTime(chamado.attributedAt as Date, chamado.finishedAt as Date)}</TableCell>
-                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(chamado.finishedAt as Date)}</TableCell>
+                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(new Date(new Date(chamado.finishedAt as Date).getTime() + (3 * 60 * 60 * 1000)))}</TableCell>
                                             </TableRow>
                                         </DialogTrigger>
                                         <DialogContent className="w-2/3 h-1/2">
@@ -311,9 +311,7 @@ export default function ChamadosAbertos() {
                     <Pagination>
                         <PaginationContent>
                             <PaginationItem>
-                                <PaginationPrevious href="#" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}>
-                                    Anterior
-                                </PaginationPrevious>
+                                <PaginationPrevious href="#" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} />
                             </PaginationItem>
                             {[...Array(endPage - startPage + 1)].map((_, i) => (
                                 <PaginationItem key={i + startPage}>
