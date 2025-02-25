@@ -5,6 +5,7 @@ import { Separator } from "@radix-ui/react-context-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogHeader } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { chamado } from "@prisma/client"
 import { useEffect, useState } from "react"
 import { formatDate } from "@/utils/functions/formatDate";
@@ -81,6 +82,13 @@ export default function ChamadosAbertos() {
         return dateB - dateA; // Ordena do mais recente para o mais antigo
     });
 
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredChamados.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredChamados.length / itemsPerPage);
+    const startPage = Math.max(1, currentPage - 7); // Começa 7 páginas antes do número atual
+    const endPage = Math.min(totalPages, startPage + 14); // Termina 15 páginas após o início
+
     function numberTicketOnPage(pageNumber: number, indexNumber: number) {
         return pageNumber >= 2 ? `${(pageNumber - 1) * itemsPerPage + indexNumber + 1}` : `${indexNumber + 1}`;
     }
@@ -131,13 +139,13 @@ export default function ChamadosAbertos() {
                     <Table>
                         <TableHeader>
                             <TableRow className="hover:bg-white">
-                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Nº</TableHead>
-                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Requisitante</TableHead>
-                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Assunto</TableHead>
-                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Email</TableHead>
+                                <TableHead className="pl-4 lg:text-[10px] xl:text-sm">Nº</TableHead>
+                                <TableHead className="pl-4 lg:text-[10px] xl:text-sm">Requisitante</TableHead>
+                                <TableHead className="pl-4 lg:text-[10px] xl:text-sm">Assunto</TableHead>
+                                <TableHead className="pl-4 lg:text-[10px] xl:text-sm">Email</TableHead>
                                 <TableHead>
                                     <Select onValueChange={(value) => setSelectedProblem(value)}>
-                                        <SelectTrigger className="h-8 lg:w-[140px] xl:w-[180px] lg:text-xs xl:text-sm">
+                                        <SelectTrigger className="h-8 lg:w-[140px] xl:w-[180px] lg:text-[10px] xl:text-sm">
                                             <SelectValue placeholder="Tipo de Problema" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -180,7 +188,7 @@ export default function ChamadosAbertos() {
                                                 
                                             </TableRow>
                                             </DialogTrigger>
-                                            <DialogContent className="w-2/3 h-[450px]">
+                                            <DialogContent className="w-2/3 h-[600px]">
                                                 <DialogHeader>
                                                     <DialogTitle className="flex">
                                                         <span>
@@ -195,42 +203,42 @@ export default function ChamadosAbertos() {
                                                             </TableRow>
                                                         </TableHeader>
                                                         <TableBody>
-                                                            <TableRow>
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell className="w-screen">
                                                                 <span className="w-full">
                                                                     <strong>Nome do Solicitante: </strong> {chamado.requester}
                                                                 </span>
                                                                 </TableCell>
                                                             </TableRow>                                                                
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Assunto: </strong> {chamado.subtitle}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>                                                                
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Descrição: </strong> {chamado.description}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Tipo de Problema: </strong> {chamado.typeproblem}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Data da Criação 🟢: </strong> {formatDate(chamado.createdAt)}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Tempo de Aberto 🟡: </strong> {attendantTime(chamado.createdAt, new Date() as Date)}
@@ -249,6 +257,21 @@ export default function ChamadosAbertos() {
                             )}
                         </TableBody>
                     </Table>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious href="#" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} />
+                            </PaginationItem>
+                            {[...Array(endPage - startPage + 1)].map((_, i) => (
+                                <PaginationItem key={i + startPage}>
+                                    <PaginationLink className={currentPage === i + startPage ? "bg-gray-200" : ""} href="#" onClick={() => setCurrentPage(i + startPage)}>{i + startPage}</PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext href="#" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
                 </CardContent>
             </Card>
         </div>

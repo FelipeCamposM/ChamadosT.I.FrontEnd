@@ -5,6 +5,7 @@ import { Separator } from "@radix-ui/react-context-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogHeader } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { chamado } from "@prisma/client"
 import { useEffect, useState } from "react"
 import { formatDate } from "@/utils/functions/formatDate";
@@ -90,6 +91,8 @@ export default function ChamadosAbertos() {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredChamados.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(filteredChamados.length / itemsPerPage);
+    const startPage = Math.max(1, currentPage - 7); // Começa 7 páginas antes do número atual
+    const endPage = Math.min(totalPages, startPage + 14); // Termina 15 páginas após o início
 
     function numberTicketOnPage(pageNumber: number, indexNumber: number) {
         return pageNumber >= 2 ? `${(pageNumber - 1) * itemsPerPage + indexNumber + 1}` : `${indexNumber + 1}`;
@@ -207,7 +210,7 @@ export default function ChamadosAbertos() {
                                                 <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{attendantTime(chamado.createdAt, new Date() as Date)}</TableCell>
                                             </TableRow>
                                             </DialogTrigger>
-                                                <DialogContent className="w-2/3 h-[550px]">
+                                                <DialogContent className="w-2/3 h-[650px]">
                                                 <DialogHeader>
                                                     <DialogTitle className="flex">
                                                         <span>
@@ -222,49 +225,49 @@ export default function ChamadosAbertos() {
                                                             </TableRow>
                                                         </TableHeader>
                                                         <TableBody>
-                                                            <TableRow>
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell className="w-screen">
                                                                 <span className="w-full">
                                                                     <strong>Nome do Solicitante: </strong> {chamado.requester}
                                                                 </span>
                                                                 </TableCell>
                                                             </TableRow>                                                                
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Assunto: </strong> {chamado.subtitle}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>                                                                
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Descrição: </strong> {chamado.description}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Tipo de Problema: </strong> {chamado.typeproblem}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Responsável: </strong> {chamado.attributedByUser}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Data da Criação 🟢: </strong> {formatDate(chamado.createdAt)}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>
-                                                            <TableRow className="w-full">
+                                                            <TableRow className="w-full h-16">
                                                                 <TableCell>
                                                                     <span>
                                                                         <strong>Tempo de Aberto 🟡: </strong> {attendantTime(chamado.createdAt, new Date() as Date)}
@@ -283,6 +286,21 @@ export default function ChamadosAbertos() {
                             )}
                         </TableBody>
                     </Table>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious href="#" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} />
+                            </PaginationItem>
+                            {[...Array(endPage - startPage + 1)].map((_, i) => (
+                                <PaginationItem key={i + startPage}>
+                                    <PaginationLink className={currentPage === i + startPage ? "bg-gray-200" : ""} href="#" onClick={() => setCurrentPage(i + startPage)}>{i + startPage}</PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext href="#" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
                 </CardContent>
             </Card>
         </div>

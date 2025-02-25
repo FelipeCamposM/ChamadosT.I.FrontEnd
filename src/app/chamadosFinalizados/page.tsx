@@ -198,16 +198,16 @@ export default function ChamadosAbertos() {
                                         </SelectContent>
                                     </Select>
                                 </TableHead>
-                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Data da Criação 🟢</TableHead>
-                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Tempo de Atendimento 🟡</TableHead>
-                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Data de Encerramento 🔴</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Data Criação 🟢</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Tempo Atendimento 🟡</TableHead>
+                                <TableHead className="pl-4 lg:text-xs xl:text-sm">Data Encerramento 🔴</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {currentItems.length > 0 ? (
                                 currentItems.map((chamado, index) => (
                                     <Dialog key={chamado.id}>
-                                        <DialogTrigger className="hover:cursor-pointer" asChild>
+                                        <DialogTrigger className="hover:cursor-pointer " asChild>
                                             <TableRow key={chamado.id} className="max-h-16 h-16">
                                                 <TableCell className="font-medium text-center lg:text-xs xl:text-sm">{numberTicketOnPage(currentPage, index)}º</TableCell>
                                                 <TableCell className="pl-4 w-32 lg:text-xs xl:text-sm">{chamado.requester}</TableCell>
@@ -221,7 +221,7 @@ export default function ChamadosAbertos() {
                                                 <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(new Date(new Date(chamado.finishedAt as Date).getTime() + (3 * 60 * 60 * 1000)))}</TableCell>
                                             </TableRow>
                                         </DialogTrigger>
-                                        <DialogContent className="w-2/3 h-1/2">
+                                        <DialogContent className="w-2/3 h-[700px]">
                                             <DialogHeader>
                                                 <DialogTitle className="flex">
                                                     <span>
@@ -231,66 +231,66 @@ export default function ChamadosAbertos() {
                                             </DialogHeader>
                                                 <Table className="flex flex-col w-full">
                                                     <TableBody>
-                                                        <TableRow>
+                                                        <TableRow className="w-full h-16">
                                                             <TableCell className="w-screen">
-                                                            <span className="w-full">
-                                                                <strong>Nome do Solicitante: </strong> {chamado.requester}
-                                                            </span>
+                                                                <span className="w-full">
+                                                                    <strong>Nome do Solicitante: </strong> {chamado.requester}
+                                                                </span>
                                                             </TableCell>
                                                         </TableRow>                                                                
-                                                        <TableRow className="w-full">
+                                                        <TableRow className="w-full h-16">
                                                             <TableCell>
                                                                 <span>
                                                                     <strong>Assunto: </strong> {chamado.subtitle}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>                                                                
-                                                        <TableRow className="w-full">
+                                                        <TableRow className="w-full h-16">
                                                             <TableCell>
                                                                 <span>
                                                                     <strong>Descrição: </strong> {chamado.description}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>
-                                                        <TableRow className="w-full">
+                                                        <TableRow className="w-full h-16">
                                                             <TableCell>
                                                                 <span>
                                                                     <strong>Tipo de Problema: </strong> {chamado.typeproblem}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>
-                                                        <TableRow className="w-full">
+                                                        <TableRow className="w-full h-16">
                                                             <TableCell>
                                                                 <span>
                                                                     <strong>Responsável: </strong> {chamado.attributedByUser}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>
-                                                        <TableRow className="w-full">
+                                                        <TableRow className="w-full h-16">
                                                             <TableCell>
                                                                 <span>
                                                                     <strong>Mensagem de Encerramento: </strong> {chamado.reasonFinished}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>
-                                                        <TableRow className="w-full">
+                                                        <TableRow className="w-full h-16">
                                                             <TableCell>
                                                                 <span>
                                                                     <strong>Data da Criação 🟢: </strong> {formatDate(chamado.createdAt)}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>
-                                                        <TableRow className="w-full">
+                                                        <TableRow className="w-full h-16">
                                                             <TableCell>
                                                                 <span>
                                                                     <strong>Tempo de Aberto 🟡: </strong> {attendantTime(chamado.createdAt, new Date() as Date)}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>
-                                                        <TableRow className="w-full">
+                                                        <TableRow className="w-full h-16">
                                                             <TableCell>
                                                                 <span>
-                                                                    <strong>Data de Encerramento 🔴: </strong> {formatDate(chamado.finishedAt as Date)}
+                                                                    <strong>Data de Encerramento 🔴: </strong> {formatDate(new Date(new Date(chamado.finishedAt as Date).getTime() + (3 * 60 * 60 * 1000)))}
                                                                 </span>
                                                             </TableCell>
                                                         </TableRow>
