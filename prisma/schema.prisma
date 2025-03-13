@@ -16,6 +16,7 @@ model chamado {
   email            String
   ticket           String    @unique
   typeproblem      String
+  messagesRegister Json?
   createdAt        DateTime  @default(now())
   attributedAt     DateTime?
   finishedAt       DateTime?

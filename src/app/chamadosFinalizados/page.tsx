@@ -14,6 +14,13 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 import { Input } from "@/components/ui/input";
 import { Eraser } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Toggle } from "@/components/ui/toggle";
+
+interface Message {
+    author: string;
+    content: string;
+    timestamp: string;
+}
 
 export default function ChamadosAbertos() {
     const [chamados, setChamados] = useState<chamado[]>([]);
@@ -24,6 +31,7 @@ export default function ChamadosAbertos() {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [toggleChat, setToggleChat] = useState("panel")
     const itemsPerPage = 15;
 
     // Função para buscar os dados dos chamados
@@ -95,6 +103,16 @@ export default function ChamadosAbertos() {
         return pageNumber >= 2 ? `${(pageNumber - 1) * itemsPerPage + indexNumber + 1}` : `${indexNumber + 1}`;
     }
 
+    function toggleToChat(value: string){
+        if (value === "chat"){
+            setToggleChat("panel");
+            console.log(toggleChat);
+        } else {
+            setToggleChat("chat");
+            console.log(toggleChat);
+        }
+    }
+
     return (
         <div>
             <Card className="my-10 mx-5 bg-[#fcfcfc]">
@@ -150,17 +168,17 @@ export default function ChamadosAbertos() {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                            <SelectLabel>Problemas</SelectLabel>
-                                            <SelectItem value="Winthor">Winthor 🟠</SelectItem>
-                                            <SelectItem value="Ellevti">Ellévti 🔵</SelectItem>
-                                            <SelectItem value="Whatsapp">Whatsapp 🟢</SelectItem>
-                                            <SelectItem value="Cadastro-Usuario">Cadastro de Usuários 👤</SelectItem>
-                                            <SelectItem value="Problema-Equipamentos">Problema com Equipamentos 🛠️</SelectItem>
-                                            <SelectItem value="Problema-Impressoras">Problema com Impressoras 🖨️</SelectItem>
-                                            <SelectItem value="Problema-Site">Problema com o Site 🌐</SelectItem>
-                                            <SelectItem value="Instalacao-Software">Instalação de Software 💾</SelectItem>
-                                            <SelectItem value="Requisicao-Equipamento">Requisição de equipamento 🛠️</SelectItem>
-                                            <SelectItem value="Ajuda-TI">Obter Ajuda T.I. 💻</SelectItem>
+                                                <SelectLabel>Problemas</SelectLabel>
+                                                <SelectItem value="Winthor">Winthor 🟠</SelectItem>
+                                                <SelectItem value="Ellevti">Ellévti 🔵</SelectItem>
+                                                <SelectItem value="Whatsapp">Whatsapp 🟢</SelectItem>
+                                                <SelectItem value="Cadastro-Usuario">Cadastro de Usuários 👤</SelectItem>
+                                                <SelectItem value="Problema-Equipamentos">Problema com Equipamentos 🛠️</SelectItem>
+                                                <SelectItem value="Problema-Impressoras">Problema com Impressoras 🖨️</SelectItem>
+                                                <SelectItem value="Problema-Site">Problema com o Site 🌐</SelectItem>
+                                                <SelectItem value="Instalacao-Software">Instalação de Software 💾</SelectItem>
+                                                <SelectItem value="Requisicao-Equipamento">Requisição de equipamento 🛠️</SelectItem>
+                                                <SelectItem value="Ajuda-TI">Obter Ajuda T.I. 💻</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
@@ -206,7 +224,11 @@ export default function ChamadosAbertos() {
                         <TableBody>
                             {currentItems.length > 0 ? (
                                 currentItems.map((chamado, index) => (
-                                    <Dialog key={chamado.id}>
+                                    <Dialog key={chamado.id} onOpenChange={(open) => { if (!open) {
+                                        setTimeout(()=> {
+                                            setToggleChat("panel");
+                                        }, 300);
+                                    }; }}>
                                         <DialogTrigger className="hover:cursor-pointer " asChild>
                                             <TableRow key={chamado.id} className="max-h-16 h-16">
                                                 <TableCell className="font-medium text-center lg:text-xs xl:text-sm">{numberTicketOnPage(currentPage, index)}º</TableCell>
@@ -221,81 +243,127 @@ export default function ChamadosAbertos() {
                                                 <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(new Date(new Date(chamado.finishedAt as Date).getTime() + (3 * 60 * 60 * 1000)))}</TableCell>
                                             </TableRow>
                                         </DialogTrigger>
-                                        <DialogContent className="w-2/3 h-[700px]">
+                                        <DialogContent className="w-2/3 h-[700px] flex flex-col">
                                             <DialogHeader>
-                                                <DialogTitle className="flex">
-                                                    <span>
+                                                <DialogTitle className="flex gap-6">
+                                                    <span className="text-sm">
                                                         Informações à respeito do Chamado
                                                     </span>
+                                                    {/* <Button className="w-fit" onClick={() => toggleToChat(toggleChat)}>
+                                                        toggle
+                                                    </Button> */}
+                                                    <label className="inline-flex items-center cursor-pointer mr-8">
+                                                        <span className="ms-3 mr-3 text-sm font-medium text-gray-900 dark:text-gray-300">Painel</span>
+                                                        <input type="checkbox" value="" className="sr-only peer" onClick={() => toggleToChat(toggleChat)}/>
+                                                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-gray-600 dark:peer-checked:bg-gray-600"></div>
+                                                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Chat</span>
+                                                    </label>
                                                 </DialogTitle>
                                             </DialogHeader>
-                                                <Table className="flex flex-col w-full">
-                                                    <TableBody>
-                                                        <TableRow className="w-full h-16">
-                                                            <TableCell className="w-screen">
-                                                                <span className="w-full">
-                                                                    <strong>Nome do Solicitante: </strong> {chamado.requester}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>                                                                
-                                                        <TableRow className="w-full h-16">
-                                                            <TableCell>
-                                                                <span>
-                                                                    <strong>Assunto: </strong> {chamado.subtitle}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>                                                                
-                                                        <TableRow className="w-full h-16">
-                                                            <TableCell>
-                                                                <span>
-                                                                    <strong>Descrição: </strong> {chamado.description}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        <TableRow className="w-full h-16">
-                                                            <TableCell>
-                                                                <span>
-                                                                    <strong>Tipo de Problema: </strong> {chamado.typeproblem}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        <TableRow className="w-full h-16">
-                                                            <TableCell>
-                                                                <span>
-                                                                    <strong>Responsável: </strong> {chamado.attributedByUser}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        <TableRow className="w-full h-16">
-                                                            <TableCell>
-                                                                <span>
-                                                                    <strong>Mensagem de Encerramento: </strong> {chamado.reasonFinished}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        <TableRow className="w-full h-16">
-                                                            <TableCell>
-                                                                <span>
-                                                                    <strong>Data da Criação 🟢: </strong> {formatDate(chamado.createdAt)}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        <TableRow className="w-full h-16">
-                                                            <TableCell>
-                                                                <span>
-                                                                    <strong>Tempo de Aberto 🟡: </strong> {attendantTime(chamado.createdAt, new Date() as Date)}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        <TableRow className="w-full h-16">
-                                                            <TableCell>
-                                                                <span>
-                                                                    <strong>Data de Encerramento 🔴: </strong> {formatDate(new Date(new Date(chamado.finishedAt as Date).getTime() + (3 * 60 * 60 * 1000)))}
-                                                                </span>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    </TableBody>
-                                                </Table>
+                                                <div className="flex flex-col justify-center items-center overflow-auto">
+                                                    <Table className="flex flex-col w-full">
+                                                        <TableBody className="h-full">
+                                                            <TableRow className={`w-full mt-10 h-fit ${toggleChat === "chat" ? "hidden" : "block" }`}>
+                                                                <TableCell className="flex flex-col gap-2 text-lg">
+                                                                    <div className="flex justify-between">
+                                                                        <span>
+                                                                            <strong>Data da Criação 🟢: </strong>
+                                                                        </span>
+                                                                        <span className="text-[16px]">
+                                                                            {formatDate(chamado.createdAt)}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="flex justify-between">
+                                                                        <span>
+                                                                            <strong>Data de Encerramento 🔴: </strong>
+                                                                        </span>
+                                                                        <span className="text-[16px]">
+                                                                            {formatDate(new Date(new Date(chamado.finishedAt as Date).getTime() + (3 * 60 * 60 * 1000)))}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="flex justify-between">
+                                                                        <span>
+                                                                            <strong>Tempo de Aberto 🟡: </strong>
+                                                                        </span>
+                                                                        <span className="text-[16px]">
+                                                                            {attendantTime(chamado.createdAt, new Date() as Date)}
+                                                                        </span>
+                                                                    </div>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                            <TableRow className={`w-full h-12 ${toggleChat === "chat" ? "hidden" : "block" }`}>
+                                                                <TableCell className="w-screen">
+                                                                    <span className="w-full text-lg">
+                                                                        <strong>Nome do Solicitante: </strong> {chamado.requester}
+                                                                    </span>
+                                                                </TableCell>
+                                                            </TableRow>                                                                
+                                                            <TableRow className={`w-full h-fit ${toggleChat === "chat" ? "hidden" : "block" }`}>
+                                                                <TableCell>
+                                                                    <span className="w-full text-lg">
+                                                                        <strong>Assunto: </strong> {chamado.subtitle}
+                                                                    </span>
+                                                                </TableCell>
+                                                            </TableRow>                                                                
+                                                            <TableRow className={`w-full h-fit ${toggleChat === "chat" ? "hidden" : "block" }`}>
+                                                                <TableCell>
+                                                                    <span className="w-full text-lg">
+                                                                        <strong>Descrição: </strong> {chamado.description}
+                                                                    </span>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                            <TableRow className={`w-full h-12 ${toggleChat === "chat" ? "hidden" : "block" }`}>
+                                                                <TableCell>
+                                                                    <span className="w-full text-lg">
+                                                                        <strong>Tipo de Problema: </strong> {chamado.typeproblem}
+                                                                    </span>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                            <TableRow className={`w-full h-12 ${toggleChat === "chat" ? "hidden" : "block" }`}>
+                                                                <TableCell>
+                                                                    <span className="w-full text-lg">
+                                                                        <strong>Responsável: </strong> {chamado.attributedByUser}
+                                                                    </span>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                            <TableRow className={`w-full mb-10 h-fit ${toggleChat === "chat" ? "hidden" : "block" }`}>
+                                                                <TableCell>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="w-full text-lg">
+                                                                            <strong>Mensagem de Encerramento: </strong> 
+                                                                        </span>
+                                                                        <span>
+                                                                            {chamado.reasonFinished}
+                                                                        </span>
+                                                                    </div>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        </TableBody>
+                                                    </Table>
+                                                    <div className={`mt-10 ${toggleChat === "panel" ? "hidden" : "block" } max-h-[550px] overflow-auto`}>
+                                                    {Array.isArray(chamado.messagesRegister) && chamado.messagesRegister.length > 0 ? (
+                                                        (chamado.messagesRegister as unknown as Message[]).map((item, index) => (
+                                                            <span key={index}>
+                                                                <div className="flex flex-col gap-1 mb-2 mr-4 bg-gray-200 w-fit p-3 rounded-lg shadow-md">
+                                                                    <div className="flex gap-2">
+                                                                        <span className="text-lg text-gray-500 font-bold">
+                                                                            {item.author}:
+                                                                        </span>
+                                                                        <span className="text-gray-400">
+                                                                            {new Date(Number(item.timestamp)).toLocaleDateString("pt-BR")}
+                                                                        </span>
+                                                                    </div>
+                                                                    <span className="pl-6">
+                                                                        {item.content}
+                                                                    </span> 
+                                                                </div>                                                   
+                                                            </span>
+                                                        ))
+                                                    ) : (
+                                                        <span className="text-center">Nenhuma mensagem registrada.</span>
+                                                    )}
+                                                    </div>
+                                                </div>
                                         </DialogContent>
                                     </Dialog>
                                 ))

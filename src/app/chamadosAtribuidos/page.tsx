@@ -193,8 +193,8 @@ export default function ChamadosAbertos() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredChamados.length > 0 ? (
-                                filteredChamados
+                            {currentItems.length > 0 ? (
+                                currentItems
                                     .map((chamado: chamado, index) => (
                                     <Dialog key={chamado.id}>
                                         <DialogTrigger className="hover:cursor-pointer" asChild>
