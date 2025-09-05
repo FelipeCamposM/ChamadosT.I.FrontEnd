@@ -118,7 +118,12 @@ export default function ChamadosAbertos() {
             <Card className="my-10 mx-5 bg-[#fcfcfc]">
                 <CardHeader>
                     <CardTitle className="flex justify-between">
-                        <span>Chamados Finalizados</span>
+                        <div className="flex flex-col gap-2">
+                            <span className="text-lg">Chamados Finalizados</span>
+                            <span className="border-2 border-gray-[150] rounded-md p-2 bg-gray-100 shadow-sm">
+                                <span className="font-normal text-sm">Total de Chamados Finalizados: </span> <span className="font-bold text-sm">{filteredChamados.length}</span>
+                            </span>
+                        </div>
                         <div className="flex space-x-2">
                             <div className="flex gap-2">
                                 <Button className="mt-6" variant="outline" onClick={clearFilters}>Limpar <Eraser className="w-4 h-4"/></Button>
@@ -155,9 +160,10 @@ export default function ChamadosAbertos() {
                 </CardHeader>
                 <Separator />
                 <CardContent>
+                    
                     <Table className="my-2">
                         <TableHeader>
-                            <TableRow className="hover:bg-white">
+                            <TableRow className="hover:bg-gray-50">
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Nº</TableHead>
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Requisitante</TableHead>
                                 <TableHead className="pl-4 lg:text-xs xl:text-sm">Assunto</TableHead>
@@ -170,7 +176,6 @@ export default function ChamadosAbertos() {
                                             <SelectGroup>
                                                 <SelectLabel>Problemas</SelectLabel>
                                                 <SelectItem value="Winthor">Winthor 🟠</SelectItem>
-                                                <SelectItem value="Ellevti">Ellévti 🔵</SelectItem>
                                                 <SelectItem value="Whatsapp">Whatsapp 🟢</SelectItem>
                                                 <SelectItem value="Cadastro-Usuario">Cadastro de Usuários 👤</SelectItem>
                                                 <SelectItem value="Problema-Equipamentos">Problema com Equipamentos 🛠️</SelectItem>
@@ -196,6 +201,7 @@ export default function ChamadosAbertos() {
                                                 <SelectItem value="Jhionathan R3">Jhionathan R3</SelectItem>
                                                 <SelectItem value="Felipe Campos">Felipe Campos</SelectItem>
                                                 <SelectItem value="Christofer">Christofer</SelectItem>
+                                                <SelectItem value="Gustavo Henrique">Gustavo Henrique</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
@@ -212,6 +218,7 @@ export default function ChamadosAbertos() {
                                                 <SelectItem value="Jhionathan R3">Jhionathan R3</SelectItem>
                                                 <SelectItem value="Felipe Campos">Felipe Campos</SelectItem>
                                                 <SelectItem value="Christofer">Christofer</SelectItem>
+                                                <SelectItem value="Gustavo Henrique">Gustavo Henrique</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
@@ -321,8 +328,8 @@ export default function ChamadosAbertos() {
                                                             </TableRow>
                                                             <TableRow className={`w-full h-12 ${toggleChat === "chat" ? "hidden" : "block" }`}>
                                                                 <TableCell>
-                                                                    <span className="w-full text-lg">
-                                                                        <strong>Responsável: </strong> {chamado.attributedByUser}
+                                                                    <span className="w-full lg:text-lg md:text-sm">
+                                                                        <strong className="lg:text-lg md:text-sm">Responsável: </strong> {chamado.attributedByUser}
                                                                     </span>
                                                                 </TableCell>
                                                             </TableRow>
@@ -379,7 +386,10 @@ export default function ChamadosAbertos() {
                     <Pagination>
                         <PaginationContent>
                             <PaginationItem>
-                                <PaginationPrevious href="#" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} />
+                                <PaginationPrevious namePrevious="Primeira Página" href="#" onClick={() => setCurrentPage(1)} />
+                            </PaginationItem>
+                            <PaginationItem>
+                                <PaginationPrevious namePrevious="Anterior" href="#" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} />
                             </PaginationItem>
                             {[...Array(endPage - startPage + 1)].map((_, i) => (
                                 <PaginationItem key={i + startPage}>
@@ -387,7 +397,10 @@ export default function ChamadosAbertos() {
                                 </PaginationItem>
                             ))}
                             <PaginationItem>
-                                <PaginationNext href="#" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} />
+                                <PaginationNext nameNext="Próxima" href="#" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} />
+                            </PaginationItem>
+                            <PaginationItem>
+                                <PaginationNext nameNext="Última Página" href="#" onClick={() => setCurrentPage(totalPages)} />
                             </PaginationItem>
                         </PaginationContent>
                     </Pagination>

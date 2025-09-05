@@ -14,7 +14,7 @@ import { attendantTime } from "@/utils/functions/attendantTime";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eraser } from "lucide-react";
-
+import { checkDate } from "@/utils/functions/checkDate";
 
 
 export default function ChamadosAbertos() {
@@ -99,7 +99,12 @@ export default function ChamadosAbertos() {
             <Card className="my-10 mx-5 bg-[#fcfcfc]"> 
                 <CardHeader>
                 <CardTitle className="flex justify-between">
-                        <span>Chamados Abertos</span>
+                    <div className="flex flex-col gap-2">
+                        <span className="text-lg">Chamados Abertos</span>
+                        <span className="border-2 border-gray-[150] rounded-md p-2 bg-gray-100 shadow-sm">
+                            <span className="font-normal text-sm">Total de Chamados Abertos: </span> <span className="font-bold text-sm">{filteredChamados.length}</span>
+                        </span>
+                    </div>
                         <div className="flex space-x-2">
                             <div className="flex gap-2">
                                 <Button className="mt-6" variant="outline" onClick={clearFilters}>Limpar <Eraser className="w-4 h-4"/></Button>
@@ -142,7 +147,11 @@ export default function ChamadosAbertos() {
                                 <TableHead className="pl-4 lg:text-[10px] xl:text-sm">Nº</TableHead>
                                 <TableHead className="pl-4 lg:text-[10px] xl:text-sm">Requisitante</TableHead>
                                 <TableHead className="pl-4 lg:text-[10px] xl:text-sm">Assunto</TableHead>
-                                <TableHead className="pl-4 lg:text-[10px] xl:text-sm">Email</TableHead>
+                                <TableHead className="pl-4 lg:text-[10px] xl:text-sm md:hidden xl:block ">
+                                    <div className="flex items-center h-full">
+                                        <span>Email</span>
+                                    </div>
+                                </TableHead>
                                 <TableHead>
                                     <Select onValueChange={(value) => setSelectedProblem(value)}>
                                         <SelectTrigger className="h-8 lg:w-[140px] xl:w-[180px] lg:text-[10px] xl:text-sm">
@@ -152,7 +161,6 @@ export default function ChamadosAbertos() {
                                             <SelectGroup>
                                             <SelectLabel>Problemas</SelectLabel>
                                             <SelectItem value="Winthor">Winthor 🟠</SelectItem>
-                                            <SelectItem value="Ellevti">Ellévti 🔵</SelectItem>
                                             <SelectItem value="Whatsapp">Whatsapp 🟢</SelectItem>
                                             <SelectItem value="Cadastro-Usuario">Cadastro de Usuários 👤</SelectItem>
                                             <SelectItem value="Problema-Equipamentos">Problema com Equipamentos 🛠️</SelectItem>
@@ -171,8 +179,8 @@ export default function ChamadosAbertos() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredChamados.length > 0 ? (
-                                filteredChamados
+                            {currentItems.length > 0 ? (
+                                currentItems
                                     .map((chamado: chamado, index) => (
                                     <Dialog key={chamado.id}>
                                         <DialogTrigger className="hover:cursor-pointer" asChild>
@@ -180,11 +188,24 @@ export default function ChamadosAbertos() {
                                                 <TableCell className="font-medium text-center lg:text-xs xl:text-sm">{numberTicketOnPage(currentPage, index)}</TableCell>
                                                 <TableCell className="pl-4 w-32 lg:text-xs xl:text-sm">{chamado.requester}</TableCell>
                                                 <TableCell className="pl-4 truncate w-48 overflow-hidden text-ellipsis whitespace-nowrap lg:text-xs xl:text-sm">{truncateText(chamado.subtitle, 25)}</TableCell>
-                                                <TableCell className="pl-4 lg:text-xs xl:text-sm">{chamado.email}</TableCell>
+                                                <TableCell className="pl-4 lg:text-xs xl:text-sm md:hidden xl:block my-auto h-16">
+                                                    <div className="flex items-center h-full">
+                                                        {chamado.email}
+                                                    </div>
+                                                </TableCell>
                                                 <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{chamado.typeproblem}</TableCell>
                                                 <TableCell className="pl-4 truncate w-48 overflow-hidden text-ellipsis whitespace-nowrap lg:text-xs xl:text-sm">{truncateText(chamado.description, 50)}</TableCell>
                                                 <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{formatDate(chamado.createdAt)}</TableCell>
-                                                <TableCell className="pl-4 w-56 lg:text-xs xl:text-sm">{attendantTime(chamado.createdAt, new Date() as Date)}</TableCell>
+                                                <TableCell
+                                                    className={`pl-4 w-56 lg:text-xs xl:text-sm rounded-xl ${
+                                                        checkDate(chamado.createdAt) === "level1" ? "bg-red-100" :
+                                                        checkDate(chamado.createdAt) === "level2" ? "bg-red-200" :
+                                                        checkDate(chamado.createdAt) === "level3" ? "bg-red-300" :
+                                                        ""
+                                                    }`}
+                                                >
+                                                    {attendantTime(chamado.createdAt, new Date() as Date)}
+                                                </TableCell>
                                                 
                                             </TableRow>
                                             </DialogTrigger>
